@@ -1,0 +1,339 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f8fafc;
+    color: #1f2937;
+}
+
+h1 {
+    font-size: 52px;
+    margin-bottom: 10px;
+    color: #0f172a;
+}
+
+p {
+    font-size: 16px;
+    color: #475569;
+}
+
+h2 {
+    margin-top: 25px;
+    color: #111827;
+}
+
+.game-menu {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.game-card {
+    width: 210px;
+    min-height: 170px;
+    padding: 18px;
+    border: none;
+    border-radius: 18px;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    background-color: white;
+}
+
+.game-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.14);
+}
+
+.game-icon {
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.game-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.game-description {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #475569;
+}
+
+/* Tarjeta Tres en raya */
+.tic-card {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    border: 2px solid #fb923c;
+}
+
+/* Tarjeta Snake */
+.snake-card {
+    background: linear-gradient(135deg, #ecfccb, #dcfce7);
+    border: 2px solid #22c55e;
+}
+
+/* Tarjeta Memory */
+.memory-card-menu {
+    background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+    border: 2px solid #8b5cf6;
+}
+
+#game-menu {
+    margin-bottom: 20px;
+}
+
+
+.tic-tac-toe-board {
+    display: grid;
+    grid-template-columns: repeat(3, 65px);
+    grid-template-rows: repeat(3, 65px);
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.tic-tac-toe-board button {
+    width: 65px;
+    height: 65px;
+    font-size: 28px;
+    font-weight: bold;
+    background-color: #ffedd5;
+    color: #1e3a8a;
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.tic-tac-toe-board + button {
+    display: block;
+    margin-top: 18px;
+    padding: 12px 24px;
+    background-color: #ffedd5;
+    color: #1e3a8a;
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+canvas {
+    display: block;
+    border: 2px solid black;
+    background-color: #f0f0f0;
+}
+
+
+/* Botón Nueva partida de Snake */
+.game-side-panel button {
+    display: block;
+    align-self: flex-start;
+    margin-top: 0;
+    padding: 12px 24px;
+    background-color: #b8e6a3;
+    color: #b91c1c;
+    border: 2px solid #b91c1c;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.memory-board {
+    display: grid;
+    grid-template-columns: repeat(4, 78px);
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.memory-card {
+    width: 78px;
+    height: 88px;
+    font-size: 28px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #ede9fe, #c4b5fd);
+    color: #5b21b6;
+    border: 2px solid #8b5cf6;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(139, 92, 246, 0.18);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.memory-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px rgba(139, 92, 246, 0.28);
+}
+
+.memory-card.flipped {
+    background: linear-gradient(135deg, #f5f3ff, #ddd6fe);
+    color: #4c1d95;
+    border-color: #7c3aed;
+}
+
+.memory-card.matched {
+    background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+    color: #312e81;
+    border-color: #6d28d9;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+.memory-restart {
+    display: block;
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #ddd6fe;
+    color: #4c1d95;
+    border: 2px solid #8b5cf6;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.memory-restart:hover {
+    background-color: #c4b5fd;
+}
+
+
+.game-result {
+    margin-top: 18px;
+    padding: 16px 22px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    max-width: 400px;
+}
+
+.game-result.win {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 2px solid #22c55e;
+}
+
+.game-result.lose {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 2px solid #ef4444;
+}
+
+.game-result.draw {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 2px solid #f59e0b;
+}
+
+.main-header {
+    text-align: center;
+    padding: 35px 20px;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    border-radius: 18px;
+}
+
+.main-header h1 {
+    color: white;
+    font-size: 48px;
+    margin: 0 0 12px;
+    letter-spacing: 2px;
+}
+
+.main-header p {
+    color: #cbd5e1;
+    font-size: 18px;
+    margin: 0;
+}
+
+
+/* Distribución de los videojuegos */
+.game-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 45px;
+    flex-wrap: wrap;
+}
+
+.game-play-area {
+    flex-shrink: 0;
+}
+
+.game-side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 280px;
+    padding-top: 15px;
+}
+
+/* Ajustes de los elementos laterales */
+.game-side-panel .game-result {
+    margin-top: 0;
+}
+
+.game-side-panel .memory-restart {
+    background-color: #ddd6fe;
+    color: #4c1d95;
+    border: 2px solid #8b5cf6;
+}
+
+.game-side-panel .memory-restart:hover {
+    background-color: #c4b5fd;
+}
+
+
+/* Panel de estadísticas */
+#stats-panel {
+    margin-top: 35px;
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+#general-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin: 20px 0 30px;
+}
+
+#general-stats p {
+    background-color: #e2e8f0;
+    padding: 18px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+}
+
+#game-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.stats-card {
+    padding: 20px;
+    border-radius: 14px;
+    border: 2px solid #cbd5e1;
+    background-color: #f8fafc;
+}
+
+.stats-card h4 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+.stats-card p {
+    margin: 10px 0;
+}
+
+/* Colores individuales */
+.stats-card:has(h4:first-child) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}

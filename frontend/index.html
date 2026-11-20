@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameConsole</title>
+    <link rel="stylesheet" href="styles.css">    
+</head>
+<body>
+<header class="main-header">
+    <h1>GameConsole</h1>
+    <p>Tu espacio para jugar, competir y divertirte</p>
+</header>
+
+<h2>Selecciona un videojuego</h2>
+
+<div id="game-menu" class="game-menu">
+    <button id="tic-tac-toe" class="game-card tic-card">
+        <div class="game-icon">❌ ⭕</div>
+        <div class="game-title">Tres en raya</div>
+        <div class="game-description">Juega contra otro jugador y logra 3 en línea</div>
+    </button>
+
+    <button id="snake" class="game-card snake-card">
+        <div class="game-icon">🐍</div>
+        <div class="game-title">Snake</div>
+        <div class="game-description">Come comida, crece y evita chocar</div>
+    </button>
+
+    <button id="memory" class="game-card memory-card-menu">
+        <div class="game-icon">🧠</div>
+        <div class="game-title">Memory</div>
+        <div class="game-description">Encuentra las parejas con la menor cantidad de intentos</div>
+    </button>
+</div>
+
+<div id="game-container">
+    <!-- Aquí se mostrará el juego seleccionado -->
+</div>
+
+<section id="stats-panel">
+    <h2>Estadísticas de GameConsole</h2>
+    <p>Información obtenida de GameStats</p>
+
+    <div id="general-stats"></div>
+
+    <h3>Estadísticas por videojuego</h3>
+    <div id="game-stats"></div>
+</section>
+
+<script src="gameStats.js"></script>
+<script src="games/ticTacToe.js"></script>
+<script src="games/snake.js"></script>
+<script src="games/memory.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
