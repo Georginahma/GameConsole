@@ -1,239 +1,240 @@
-
-# GameConsole - Especificación de eventos
+# GameConsole — Especificación y registro de eventos
 
 ## 1. Descripción general
 
-GameConsole genera eventos durante la ejecución de los videojuegos y los envía a GameStats para su procesamiento y análisis estadístico.
+GameConsole es una consola web que integra tres videojuegos: Tres en raya, Snake y Memory.
 
-Los eventos utilizan el formato JSON establecido en el Proyecto 1, con el propósito de mantener la compatibilidad entre ambos sistemas.
+Durante las partidas, cada videojuego genera eventos que se envían a GameStats mediante HTTP. Estos eventos permiten registrar las acciones realizadas, identificar las partidas y obtener estadísticas generales e individuales de los videojuegos.
+
+La implementación utiliza JavaScript para generar los eventos, Go para recibirlos y Scala para calcular las estadísticas.
 
 ## 2. Estructura de los eventos
 
-Cada evento contiene los siguientes campos:
+Los eventos utilizan una estructura JSON compatible con GameStats.
 
 | Campo | Descripción |
 |---|---|
-| eventId | Identificador único del evento. |
-| timestamp | Fecha y hora en que ocurrió el evento. |
-| gameId | Identificador del videojuego. |
-| gameVersion | Versión del videojuego. |
-| matchId | Identificador único de la partida. |
-| playerId | Identificador del jugador. |
-| type | Categoría general del evento. |
-| action | Acción específica realizada. |
-| data | Información adicional relacionada con la acción. |
+| `eventId` | Identificador único del evento. |
+| `timestamp` | Fecha y hora del evento en formato ISO 8601. |
+| `gameId` | Identificador del videojuego. |
+| `gameVersion` | Versión del videojuego, contemplada en el esquema original. |
+| `matchId` | Identificador único de la partida. |
+| `playerId` | Identificador del jugador. |
+| `type` | Categoría general del evento. |
+| `action` | Acción registrada. |
+| `data` | Información adicional del evento, cuando corresponde. |
 
-## 3. Videojuego: Tres en raya (Tic-Tac-Toe)
+**Nota:** la implementación actual de GameConsole no envía `gameVersion`. Este campo se mantiene documentado porque forma parte de la especificación original de eventos.
 
-### Descripción
+Los identificadores `eventId` y `matchId` se generan mediante `crypto.randomUUID()`.
 
-Tres en raya es un videojuego de estrategia en el que un jugador compite contra la computadora en un tablero de 3x3.
+## 3. Videojuego: Tres en raya
 
-El jugador utiliza el símbolo X y la computadora utiliza el símbolo O.
+### 3.1. Descripción
 
-La computadora selecciona sus movimientos mediante un algoritmo implementado en Prolog.
+Tres en raya es un videojuego de estrategia en el que una persona compite contra la computadora en un tablero de 3 × 3.
 
-### 3.1. Eventos del videojuego
+El jugador utiliza el símbolo X y la computadora utiliza O. Los movimientos de la computadora se determinan mediante reglas implementadas en SWI-Prolog y consultadas desde Node.js.
 
-| Evento | Descripción |
-|---|---|
-| MATCH_STARTED | Se genera cuando inicia una nueva partida. |
-| PLAYER_MOVE | Se genera cuando el jugador selecciona una casilla. |
-| AI_DECISION | Se genera cuando Prolog determina el movimiento de la computadora. |
-| PLAYER_WON | Se genera cuando el jugador gana la partida. |
-| PLAYER_LOST | Se genera cuando la computadora gana la partida. |
-| MATCH_DRAW | Se genera cuando la partida termina en empate. |
-| MATCH_FINISHED | Se genera cuando finaliza la partida. |
+### 3.2. Eventos implementados
 
-### 3.2. Ejemplo de evento
+| Acción | Tipo | Descripción |
+|---|---|---|
+| `MATCH_STARTED` | MATCH | Se registra cuando inicia una partida. |
+| `PLAYER_ACTION` | PLAYER | Registra una posición seleccionada y el símbolo X u O. |
+| `MATCH_FINISHED` | MATCH | Registra el ganador o el resultado `DRAW` cuando existe empate. |
 
-El siguiente JSON representa un movimiento realizado por el jugador:
+El campo `playerId` identifica al jugador humano como `PLAYER001` y a la computadora como `COMPUTER` en los eventos de movimiento.
+
+### 3.3. Ejemplo de evento
+
+El siguiente JSON representa un movimiento del jugador:
 
 ```json
 {
   "eventId": "EV002",
   "timestamp": "2026-11-18T22:30:00Z",
   "gameId": "TICTACTOE",
-  "gameVersion": "1.0",
   "matchId": "MATCH001",
   "playerId": "PLAYER001",
-  "type": "GAME",
-  "action": "PLAYER_MOVE",
+  "type": "PLAYER",
+  "action": "PLAYER_ACTION",
   "data": {
-    "row": 0,
-    "column": 1,
+    "position": 1,
     "symbol": "X"
   }
 }
 ```
 
-### 3.3. Estadísticas esperadas
+Los identificadores del ejemplo son ilustrativos. En la ejecución real se generan identificadores UUID.
 
-A partir de los eventos generados, GameStats podrá calcular:
+### 3.4. Estadísticas disponibles
 
+GameStats calcula para Tres en raya:
+
+- Cantidad de eventos registrados.
+- Cantidad de acciones realizadas.
 - Cantidad de partidas iniciadas.
 - Cantidad de partidas finalizadas.
-- Victorias del jugador.
-- Derrotas del jugador.
-- Empates.
-- Cantidad de movimientos realizados.
-- Duración de las partidas.
 
-### 3.4. Identificación de partidas
+Los resultados de victoria, derrota y empate se registran en los eventos de finalización, pero todavía no se muestran como estadísticas independientes en el panel.
 
-Cada partida tendrá un identificador `matchId` único.
+## 4. Videojuego: Snake
 
-Todos los eventos pertenecientes a una misma partida compartirán ese identificador.
+### 4.1. Descripción
 
-Cada evento tendrá su propio `eventId` y su correspondiente marca de tiempo.
+Snake es un videojuego en el que el jugador controla una serpiente mediante las flechas del teclado.
 
-Esto permitirá identificar correctamente los eventos cuando existan varias partidas ejecutándose simultáneamente.
+La serpiente aumenta su longitud y puntuación al consumir alimentos. La partida termina cuando choca contra un borde o contra su propio cuerpo.
 
+### 4.2. Eventos implementados
 
+| Acción | Tipo | Descripción |
+|---|---|---|
+| `MATCH_STARTED` | MATCH | Registra el inicio de una partida. |
+| `PLAYER_ACTION` | PLAYER | Registra la puntuación cuando la serpiente consume un alimento. |
+| `MATCH_FINISHED` | MATCH | Registra el motivo de finalización y la puntuación final. |
 
-## 4. Videojuego: Snake (Serpiente)
+Los motivos de finalización incluyen `WALL_COLLISION`, `SELF_COLLISION` y `RESTARTED`.
 
-### Descripción
+### 4.3. Ejemplo de evento
 
-Snake es un videojuego en el que el jugador controla una serpiente que se desplaza por un tablero, consume alimentos y aumenta su longitud.
-
-El objetivo es obtener la mayor puntuación posible evitando chocar contra las paredes o contra el cuerpo de la serpiente.
-
-### 4.1. Eventos del videojuego
-
-| Evento | Descripción |
-|---|---|
-| MATCH_STARTED | Se genera cuando comienza una partida. |
-| PLAYER_MOVE | Se genera cuando la serpiente realiza un movimiento. |
-| FOOD_EATEN | Se genera cuando la serpiente consume un alimento. |
-| SCORE_UPDATED | Se genera cuando aumenta la puntuación. |
-| PLAYER_LOST | Se genera cuando la serpiente choca y termina el juego. |
-| MATCH_FINISHED | Se genera cuando finaliza la partida. |
-
-### 4.2. Ejemplo de evento
+El siguiente evento representa un alimento consumido:
 
 ```json
 {
   "eventId": "EV003",
   "timestamp": "2026-11-18T22:40:00Z",
   "gameId": "SNAKE",
-  "gameVersion": "1.0",
   "matchId": "MATCH002",
   "playerId": "PLAYER001",
-  "type": "GAME",
-  "action": "FOOD_EATEN",
+  "type": "PLAYER",
+  "action": "PLAYER_ACTION",
   "data": {
     "score": 10,
-    "snakeLength": 4,
-    "foodPosition": {
-      "row": 5,
-      "column": 7
-    }
+    "activity": "FOOD_EATEN"
   }
 }
 ```
 
-### 4.3. Estadísticas esperadas
+### 4.4. Estadísticas disponibles
 
-GameStats podrá calcular:
+GameStats calcula para Snake:
 
-- Cantidad de partidas iniciadas y finalizadas.
-- Puntuación máxima alcanzada.
-- Puntuación promedio por partida.
-- Cantidad de alimentos consumidos.
-- Duración de las partidas.
-- Cantidad total de movimientos.
+- Cantidad de eventos registrados.
+- Cantidad de acciones realizadas.
+- Cantidad de partidas iniciadas.
+- Cantidad de partidas finalizadas.
 
-### 4.4. Identificación de partidas
+La puntuación final queda registrada en los eventos, pero el panel todavía no calcula la puntuación máxima ni el promedio de puntuaciones.
 
-Cada partida tendrá un `matchId` único y todos sus eventos compartirán dicho identificador.
+## 5. Videojuego: Memory
 
-Los eventos podrán registrarse mientras se desarrollan varias partidas de Snake u otros videojuegos simultáneamente.
+### 5.1. Descripción
 
+Memory es un videojuego de memoria que consiste en encontrar cuatro parejas de cartas iguales.
 
+El jugador debe descubrir las parejas utilizando la menor cantidad posible de intentos.
 
-## 5. Videojuego: Memoria (Parejas)
+### 5.2. Eventos implementados
 
-### Descripción
+| Acción | Tipo | Descripción |
+|---|---|---|
+| `MATCH_STARTED` | MATCH | Registra el inicio de una partida. |
+| `PLAYER_ACTION` | PLAYER | Registra cada intento y si las cartas seleccionadas coinciden. |
+| `MATCH_FINISHED` | MATCH | Registra el resultado y la cantidad total de intentos. |
 
-Memoria es un videojuego en el que el jugador debe encontrar parejas de cartas iguales dentro de un tablero.
+### 5.3. Ejemplo de evento
 
-El objetivo es descubrir todas las parejas utilizando la menor cantidad de intentos y en el menor tiempo posible.
-
-### 5.1. Eventos del videojuego
-
-| Evento | Descripción |
-|---|---|
-| MATCH_STARTED | Se genera cuando inicia una partida. |
-| CARD_FLIPPED | Se genera cuando el jugador selecciona una carta. |
-| PAIR_MATCHED | Se genera cuando encuentra dos cartas iguales. |
-| PAIR_FAILED | Se genera cuando las cartas seleccionadas son diferentes. |
-| MATCH_FINISHED | Se genera cuando completa todas las parejas. |
-
-### 5.2. Ejemplo de evento
-
-El siguiente evento representa una pareja encontrada correctamente:
+El siguiente evento representa un intento correcto:
 
 ```json
 {
   "eventId": "EV004",
   "timestamp": "2026-11-18T22:45:00Z",
   "gameId": "MEMORY",
-  "gameVersion": "1.0",
   "matchId": "MATCH003",
   "playerId": "PLAYER001",
-  "type": "GAME",
-  "action": "PAIR_MATCHED",
+  "type": "PLAYER",
+  "action": "PLAYER_ACTION",
   "data": {
-    "firstCard": 2,
-    "secondCard": 7,
-    "attempt": 3,
-    "pairsFound": 2
+    "attempts": 3,
+    "matched": true
   }
 }
 ```
 
-### 5.3. Estadísticas esperadas
+### 5.4. Estadísticas disponibles
 
-GameStats podrá calcular:
+GameStats calcula para Memory:
 
-- Cantidad de partidas iniciadas y finalizadas.
-- Cantidad de intentos realizados.
-- Cantidad de parejas encontradas.
-- Cantidad de intentos fallidos.
-- Porcentaje de aciertos.
-- Tiempo necesario para completar una partida.
-- Mejor resultado por jugador.
+- Cantidad de eventos registrados.
+- Cantidad de acciones realizadas.
+- Cantidad de partidas iniciadas.
+- Cantidad de partidas finalizadas.
 
-### 5.4. Identificación de partidas
-
-Cada partida tendrá un `matchId` único.
-
-Todos los eventos generados durante una partida compartirán ese identificador, mientras que cada evento tendrá un `eventId` diferente.
-
-Esto permitirá mantener separadas las estadísticas de distintas partidas, incluso cuando se ejecuten simultáneamente.
-```
-
-### Ajuste final del documento
-
-Ahora que tenemos los tres videojuegos definidos:
-
-- Cambia «Integración con GameStats» a **sección 6**.
-- Elimina la sección «Videojuegos pendientes», porque ya documentamos los tres juegos.
-
-**Con esto terminamos la definición inicial de eventos.**
-
-El siguiente paso será revisar GameStats para asegurar que pueda interpretar estos eventos y generar las estadísticas que mostrará GameConsole.
-
+Los eventos también contienen información sobre los intentos y las coincidencias, aunque el panel todavía no calcula el porcentaje de aciertos ni el mejor resultado.
 
 ## 6. Integración con GameStats
 
-Los eventos serán enviados al módulo Go de GameStats mediante el mecanismo HTTP utilizado en el Proyecto 1.
+La comunicación utiliza solicitudes HTTP y datos en formato JSON.
 
-Go será responsable de recibir y validar los eventos, mientras que Scala realizará el procesamiento estadístico.
+### 6.1. Registro de eventos
 
-GameConsole consultará los resultados de GameStats para mostrarlos en su panel de control.
+Los videojuegos envían eventos mediante:
 
-## 7. Videojuegos pendientes
+`POST http://localhost:8080/events`
 
-Los eventos de Snake y Memoria se documentarán posteriormente, manteniendo la misma estructura JSON.
+El módulo Go de GameStats recibe y valida los eventos antes de almacenarlos temporalmente.
+
+### 6.2. Procesamiento estadístico
+
+El módulo Scala procesa los eventos para generar estadísticas generales y estadísticas agrupadas por `gameId`.
+
+Las estadísticas generales incluyen:
+
+- `totalEvents`: total de eventos registrados.
+- `totalActions`: cantidad de eventos `PLAYER_ACTION`.
+- `totalObjectives`: cantidad de eventos `OBJECTIVE_COMPLETED`.
+- `totalPlayers`: cantidad de identificadores de jugadores distintos.
+- `pattern`: patrón de actividad detectado.
+
+Las estadísticas individuales incluyen:
+
+- `totalEvents`: eventos por videojuego.
+- `totalActions`: acciones por videojuego.
+- `matchesStarted`: partidas iniciadas.
+- `matchesFinished`: partidas finalizadas.
+
+### 6.3. Consulta de estadísticas
+
+GameConsole obtiene las estadísticas mediante:
+
+`GET http://localhost:8080/stats`
+
+El frontend actualiza el panel automáticamente cada tres segundos.
+
+Los cálculos estadísticos se realizan en Scala. GameConsole únicamente consulta y presenta los resultados.
+
+## 7. Partidas independientes y simultáneas
+
+Cada partida genera un `matchId` único mediante `crypto.randomUUID()`.
+
+Todos los eventos de una misma partida comparten ese identificador, mientras que cada evento tiene su propio `eventId`.
+
+Esto permite identificar las partidas de forma independiente, incluso cuando se ejecutan simultáneamente en diferentes pestañas del navegador.
+
+La independencia de las partidas de Memory se verificó abriendo dos pestañas y comprobando que GameStats registrara diferentes identificadores.
+
+## 8. Limitaciones actuales
+
+- Los eventos se almacenan temporalmente en memoria en Go; pueden perderse al reiniciar el contenedor.
+- El campo `gameVersion` todavía no se envía desde los videojuegos.
+- El panel no muestra aún métricas específicas como victorias, derrotas, puntuación máxima o porcentaje de aciertos.
+- Las estadísticas de partidas iniciadas y finalizadas representan eventos registrados, por lo que las partidas interrumpidas pueden quedar sin un evento de finalización.
+
+## 9. Conclusión
+
+La integración entre GameConsole y GameStats permite registrar eventos de los tres videojuegos y consultar estadísticas calculadas externamente.
+
+La identificación mediante `matchId` facilita el seguimiento de partidas independientes, mientras que la separación entre Go, Scala y GameConsole mantiene diferenciadas las responsabilidades de registro, procesamiento y visualización de los datos.
