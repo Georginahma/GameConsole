@@ -211,6 +211,10 @@ async computerMove() {
         restartButton.className = "tic-restart";
 
         restartButton.addEventListener("click", () => {
+            if (!this.gameOver) {
+            this.gameOver = true;
+            this.sendMatchFinished("RESTARTED");
+            }
             this.board = Array(9).fill(null);
             this.currentPlayer = "X";
             this.gameOver = false;
