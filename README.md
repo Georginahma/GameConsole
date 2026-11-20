@@ -143,3 +143,10 @@ GitHub Actions ejecuta automáticamente:
 3. Publicación de ambas imágenes en GitHub Container Registry cuando los cambios se suben a `main`.
 
 Repositorio: https://github.com/Georginahma/GameConsole
+
+
+## Video demostrativo
+
+El siguiente video presenta el funcionamiento de GameConsole, los tres videojuegos, la integración con GameStats, Docker y GitHub Actions.
+
+[Ver demostración de GameConsole en YouTube](https://youtu.be/Um7IWfTIzrg)
